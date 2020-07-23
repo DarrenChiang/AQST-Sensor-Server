@@ -3,10 +3,41 @@
 <html>
     <head>
         <title>Sensor Data</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="main.css">
+        <script src="js/main.js"></script>
+        <script src="js/Chart.js"></script>
     </head>
-    <body>
-        <h1>This is a Heading</h1>
-        <p>This is a paragraph.</p>
+    <body onload="on_load()">
+        <h3>Configuration</h3>
+        <div>
+            <label>Tool</label>
+            <label>Item</label>
+        <div class="select1">
+            <select id="tool1" onchange="update_items('item1')"></select>
+            <select id="item1"></select>
+        </div>
+        <div class="select2">
+            <select id="tool2" onchange="update_items('item2')"></select>
+            <select id="item2"></select>
+        </div>
+        <div class="select3">
+            <select id="tool3" onchange="update_items('item3')"></select>
+            <select id="item3"></select>
+        </div>
+        <div class="select4">
+            <select id="tool4" onchange="update_items('item4')"></select>
+            <select id="item4"></select>
+        </div>
+        <div class="start">
+            <label for="start">From:</label>
+            <input type="datetime-local" id="start" name="start">
+        </div>
+        <div class="start">
+            <label for="end">To:</label>
+            <input type="datetime-local" id="end" name="end">
+        </div>
+        <button type="button" onclick="test()">Test</button>
+        <canvas id="chart"></canvas>
     </body>
 </html>
