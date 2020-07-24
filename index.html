@@ -4,40 +4,74 @@
     <head>
         <title>Sensor Data</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="main.css">
-        <script src="js/main.js"></script>
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/jQuery.js"></script>
         <script src="js/Chart.js"></script>
+        <script src="js/main.js"></script>
     </head>
     <body onload="on_load()">
         <h3>Configuration</h3>
         <div>
-            <label>Tool</label>
-            <label>Item</label>
-        <div class="select1">
-            <select id="tool1" onchange="update_items('item1')"></select>
-            <select id="item1"></select>
+            <label class="select">Tool</label>
+            <label class="select">Chamber</label>
+            <label class="select">Item</label>
+        <div>
+            <select class="select" id="tool1" onchange="update_chambers('chamber1')"></select>
+            <select class="select" id="chamber1" onchange="update_items('item1')"></select>
+            <select class="select" id="item1"></select>
+            <label for="avg1">AVG:</label>
+            <input type="checkbox" id="avg1" name="avg1">
+            <label for="max1">MAX:</label>
+            <input type="checkbox" id="max1" name="max1">
+            <label for="min1">MIN:</label>
+            <input type="checkbox" id="min1" name="min1">
         </div>
-        <div class="select2">
-            <select id="tool2" onchange="update_items('item2')"></select>
-            <select id="item2"></select>
+        <div">
+            <select class="select" id="tool2" onchange="update_chambers('chamber2')"></select>
+            <select class="select" id="chamber2" onchange="update_items('item2')"></select>
+            <select class="select" id="item2"></select>
+            <label for="avg2">AVG: </label>
+            <input type="checkbox" id="avg2" name="avg2">
+            <label for="max2">MAX:</label>
+            <input type="checkbox" id="max2" name="max2">
+            <label for="min2">MIN:</label>
+            <input type="checkbox" id="min2" name="min2">
         </div>
-        <div class="select3">
-            <select id="tool3" onchange="update_items('item3')"></select>
-            <select id="item3"></select>
+        <div>
+            <select class="select" id="tool3" onchange="update_chambers('chamber3')"></select>
+            <select class="select" id="chamber3" onchange="update_items('item3')"></select>
+            <select class="select" id="item3"></select>
+            <label for="avg3">AVG: </label>
+            <input type="checkbox" id="avg3" name="avg3">
+            <label for="max3">MAX:</label>
+            <input type="checkbox" id="max3" name="max3">
+            <label for="min3">MIN:</label>
+            <input type="checkbox" id="min3" name="min3">
         </div>
-        <div class="select4">
-            <select id="tool4" onchange="update_items('item4')"></select>
-            <select id="item4"></select>
+        <div>
+            <select class="select" id="tool4" onchange="update_chambers('chamber4')"></select>
+            <select class="select" id="chamber4" onchange="update_items('item4')"></select>
+            <select class="select" id="item4"></select>
+            <label for="avg4">AVG: </label>
+            <input type="checkbox" id="avg4" name="avg4">
+            <label for="max4">MAX:</label>
+            <input type="checkbox" id="max4" name="max4">
+            <label for="min4">MIN:</label>
+            <input type="checkbox" id="min4" name="min4">
         </div>
-        <div class="start">
-            <label for="start">From:</label>
+        <div>
+            <label class="date-time" for="start">From:</label>
             <input type="datetime-local" id="start" name="start">
         </div>
-        <div class="start">
-            <label for="end">To:</label>
+        <div>
+            <label class="date-time" for="end">To:</label>
             <input type="datetime-local" id="end" name="end">
         </div>
-        <button type="button" onclick="test()">Test</button>
+        <div>
+        	<button type="button" onclick="save_cfg()">Save</button>
+        	<button type="button">Test</button>
+        </div>
         <canvas id="chart"></canvas>
+        <p id="error"></p>
     </body>
 </html>
