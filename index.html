@@ -13,16 +13,16 @@
         <h3>Configuration</h3>
         <div>
         	<label for="cfgselect">Select:</label>
-        	<select id="cfgselect"></select>
+        	<select id="cfgselect" onchange="cfg_select_onchange()"></select>
         </div>
         <div>
             <label class="select">Tool</label>
             <label class="select">Chamber</label>
             <label class="select">Item</label>
         <div>
-            <select class="select" id="tool1" onchange="update_chambers('chamber1')"></select>
-            <select class="select" id="chamber1" onchange="update_items('item1')"></select>
-            <select class="select" id="item1"></select>
+            <select class="select" id="tool1" onchange="tool_select_onchange('tool1')"></select>
+            <select class="select" id="chamber1" onchange="chamber_select_onchange('chamber1')"></select>
+            <select class="select" id="item1" onchange="item_select_onchange('item1')"></select>
             <label for="avg1">AVG:</label>
             <input type="checkbox" id="avg1" name="avg1">
             <label for="max1">MAX:</label>
@@ -31,9 +31,9 @@
             <input type="checkbox" id="min1" name="min1">
         </div>
         <div">
-            <select class="select" id="tool2" onchange="update_chambers('chamber2')"></select>
-            <select class="select" id="chamber2" onchange="update_items('item2')"></select>
-            <select class="select" id="item2"></select>
+            <select class="select" id="tool2" onchange="tool_select_onchange('tool2')"></select>
+            <select class="select" id="chamber2" onchange="chamber_select_onchange('chamber2')"></select>
+            <select class="select" id="item2" onchange="item_select_onchange('item2')"></select>
             <label for="avg2">AVG: </label>
             <input type="checkbox" id="avg2" name="avg2">
             <label for="max2">MAX:</label>
@@ -42,9 +42,9 @@
             <input type="checkbox" id="min2" name="min2">
         </div>
         <div>
-            <select class="select" id="tool3" onchange="update_chambers('chamber3')"></select>
-            <select class="select" id="chamber3" onchange="update_items('item3')"></select>
-            <select class="select" id="item3"></select>
+            <select class="select" id="tool3" onchange="tool_select_onchange('tool3')"></select>
+            <select class="select" id="chamber3" onchange="chamber_select_onchange('chamber3')"></select>
+            <select class="select" id="item3" onchange="item_select_onchange('item3')"></select>
             <label for="avg3">AVG: </label>
             <input type="checkbox" id="avg3" name="avg3">
             <label for="max3">MAX:</label>
@@ -53,9 +53,9 @@
             <input type="checkbox" id="min3" name="min3">
         </div>
         <div>
-            <select class="select" id="tool4" onchange="update_chambers('chamber4')"></select>
-            <select class="select" id="chamber4" onchange="update_items('item4')"></select>
-            <select class="select" id="item4"></select>
+            <select class="select" id="tool4" onchange="tool_select_onchange('tool4')"></select>
+            <select class="select" id="chamber4" onchange="chamber_select_onchange('chamber4')"></select>
+            <select class="select" id="item4" onchange="item_select_onchange('item3')"></select>
             <label for="avg4">AVG: </label>
             <input type="checkbox" id="avg4" name="avg4">
             <label for="max4">MAX:</label>
@@ -63,6 +63,12 @@
             <label for="min4">MIN:</label>
             <input type="checkbox" id="min4" name="min4">
         </div>
+        <br>
+        <div>
+        	<button type="button" onclick="save_cfg()">Save</button>
+        	<button type="button" onclick="console.log(cfgs)">Test</button>
+        </div>
+        <br>
         <div>
             <label class="date-time" for="start">From:</label>
             <input type="datetime-local" id="start" name="start">
@@ -71,10 +77,7 @@
             <label class="date-time" for="end">To:</label>
             <input type="datetime-local" id="end" name="end">
         </div>
-        <div>
-        	<button type="button" onclick="save_cfg()">Save</button>
-        	<button type="button" onclick="print_cfgs()">Test</button>
-        </div>
+        <br>      
         <canvas id="chart"></canvas>
         <pre id="error"></pre>
     </body>

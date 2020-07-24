@@ -1,69 +1,149 @@
-//loaded list of cfgs
-var cfgs = {};
+const NA = 'N/A'; //default value for no selection.
+var cfgs = {}; //saved dictionary of cfgs on client side.
 
-//get all tools from server
+/**
+ * Get available tools.
+ */
 function get_tools() {
-    //temp
+    //temporary dummy
     return ['tool#1', 'tool#2', 'tool#3', 'tool#4'];
 }
 
-function get_chambers(tool) {
-    //temp
-    if (tool == 'N/A') {
+/**
+ * Get available chambers from specified tool.
+ * Hierarchy: Tool > Chamber
+ * Returns an empty list if any parameter is NA.
+ * 
+ * @param {tool} tool specification
+ */
+function get_chambers(tool) {   
+    if (tool == NA) {
         return [];
     }
 
+    //temporary dummy
     return ['chamber1', 'chamber2', 'chamber3'];
 }
 
-//get all items for tool
+/**
+ * Get available items from specified tool and chamber.
+ * Hierarchy: Tool > Chamber > Item
+ * Returns an empty list if any parameter is NA.
+ * 
+ * @param {tool} tool specification
+ * @param {chamber} chamber specification
+ */
 function get_items(tool, chamber) {
-    //send tool to server
-    //return all items of tool
-    //temp
-    if (tool == 'N/A' || chamber == 'N/A') {
+    if (tool == NA || chamber == NA) {
         return [];
     }
 
+    //temporary dummy
     return ['item#1', 'item#2'];
 }
 
-//all tasks to do on load
+/**
+ * Executes when page first loads.
+ * Retrieves all cfgs from the server.
+ * Updates all cfg select bars.
+ */
 function on_load() {
     load_cfgs();
 
     for (var i = 1; i <= 4; i++) {
-        update_tools('tool'.concat(i));
+        update_tool_select('tool'.concat(i));
+        update_chamber_select('chamber'.concat(i));
+        update_item_select('item'.concat(i));
+        enable_cfg_checkboxes(i, false);
     }
 }
 
-//update select bar for tools
-function update_tools(id) {
+/**
+ * Executes when tool select is clicked.
+ * Updates chamber and item select respectively.
+ * Enables or disables respective checkboxes.
+ * 
+ * @param {id} id of element defined in html
+ */
+function tool_select_onchange(id) {
+    update_chamber_select('chamber'.concat(id.slice(-1)));
+    update_item_select('item'.concat(id.slice(-1)));
+    enable_cfg_checkboxes(id.slice(-1));
+}
+
+/**
+ * Executes when chamber select is clicked.
+ * Updates item select.
+ * Enables or disables respective checkboxes.
+ * 
+ * @param {id} id of element defined in html
+ */
+function chamber_select_onchange(id) {
+    update_item_select('item'.concat(id.slice(-1)));
+    enable_cfg_checkboxes(id.slice(-1));
+}
+
+/**
+ * Executes when item select is clicked.
+ * Enables or disables respective checkboxes.
+ * 
+ * @param {id} id of element defined in html
+ */
+function item_select_onchange(id) {
+    enable_cfg_checkboxes(id.slice(-1));
+}
+
+/**
+ * Enable the avg, max, and min checkboxes if the select values are valid.
+ * Returns if the checkboxes are enabled or not.
+ * 
+ * @param {row} the row of the checkboxes (corresponds with the select ids)
+ */
+function enable_cfg_checkboxes(row) {
+    var tool = document.getElementById('tool'.concat(row)).value == NA;
+    var chamber = document.getElementById('chamber'.concat(row)).value == NA;
+    var item = document.getElementById('item'.concat(row)).value == NA;
+    var disable = tool || chamber || item;
+    document.getElementById('avg'.concat(row)).disabled = disable;
+    document.getElementById('max'.concat(row)).disabled = disable;
+    document.getElementById('min'.concat(row)).disabled = disable;
+    return !disable;
+}
+
+/**
+ * Updates the tool select element options.
+ * 
+ * @param {id} id of element defined in html
+ * @param {value} optional default value to set for select
+ */
+function update_tool_select(id, value = null) {
     var tools = get_tools();
     var select = document.getElementById(id);
-    clear_select(select);
-
-    var option = document.createElement('option');
-    option.value = 'N/A';
-    option.text = 'N/A';
-    select.appendChild(option);
+    clear_select(select, true);
 
     for (var i = 0; i < tools.length; i++) {
-        option = document.createElement('option');
+        var option = document.createElement('option');
         option.value = tools[i];
         option.text = tools[i];
         select.appendChild(option);
     }
 
-    update_chambers('chamber'.concat(id.slice(-1)));
+    if (value != null && value in tools) {
+        select.value = value;
+    }
 }
 
-//update select bar for chambers
-function update_chambers(id) {
+/**
+ * Updates the chamber select element options.
+ * 
+ * @param {id} id of element defined in html
+ * @param {value} optional default value to set for select
+ */
+function update_chamber_select(id, value = null) {
     var tool = get_select('tool'.concat(id.slice(-1)));
     var chambers = get_chambers(tool);
     var select = document.getElementById(id);
-    clear_select(select);
+    clear_select(select, true);
 
     for (var i = 0; i < chambers.length; i++) {
         var option = document.createElement('option');
@@ -72,54 +152,98 @@ function update_chambers(id) {
         select.appendChild(option);
     }
 
-    update_items('item'.concat(id.slice(-1)));
+    if (value != null && value in chambers) {
+        select.value = value;
+    }
 }
 
-//update select bar for items
-function update_items(id) {
+/**
+ * Updates the item select element options.
+ * 
+ * @param {id} id of element defined in html
+ * @param {value} optional default value to set for select
+ */
+function update_item_select(id, value = null) {
     var tool = get_select('tool'.concat(id.slice(-1)));
     var chamber = get_select('chamber'.concat(id.slice(-1)));
     var items = get_items(tool, chamber);
     var select = document.getElementById(id);
-    clear_select(select);
+    clear_select(select, true);
 
     for (var i = 0; i < items.length; i++) {
         var option = document.createElement('option');
         option.value = items[i];
         option.text = items[i];
         select.appendChild(option);
-    }   
+    }
+
+    if (value != null && value in items) {
+        select.value = value;
+    }
 }
 
-//get current selected option
+/**
+ * Get current selected value of a selection.
+ * If select has no options, return N/A.
+ * Note: index and text of select option not currently used.
+ * 
+ * @param {id} id of element defined in html
+ */
 function get_select(id) {
     var select = document.getElementById(id);
 
     if (select.options.length > 0) {
-        return select.options[select.selectedIndex].value;
+        return select.value;
     }
     
-    return 'N/A';
+    return NA;
 }
 
-//clear select list options
-function clear_select(select) {
+/**
+ * Clear all options of select element.
+ *
+ * @param {select} select element in html
+ * @param {na} set na to true to leave N/A as an option
+ */
+function clear_select(select, na = false) {
     for (var i = select.options.length - 1; i >= 0; i--) {
         select.options[i] = null;
     }
+
+    if (na) {
+        var option = document.createElement('option');
+        option.value = NA;
+        option.text = NA;
+        select.appendChild(option);
+    }
 }
 
-//get date
+/**
+ * Get current selected date of a datetime entry
+ * 
+ * @param {id} id of element defined in html
+ */
 function get_date(id) {
     var element = document.getElementById(id);
     return element.value;
 }
 
+/**
+ * Return whether a checkbox is checked.
+ * 
+ * @param {id} id of element defined in html
+ */
 function get_checkbox(id) {
     var element = document.getElementById(id);
     return element.checked;
 }
 
+/**
+ * Returns true if both datetimes are valid and chronological.
+ * 
+ * @param {start} the starting datetime of the duration
+ * @param {end} the ending datetime of the duration
+ */
 function duration_is_valid(start, end) {
     var s_date = new Date(start);
     var e_date = new Date(end);
@@ -137,11 +261,19 @@ function duration_is_valid(start, end) {
     return true;
 }
 
+/**
+ *
+ */
 function load_cfgs() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             cfgs = JSON.parse(this.responseText);
+
+            for (var name in cfgs) {
+                cfgs[name] = JSON.parse(cfgs[name]);
+            }
+
             update_cfg_select();
         }
     };
@@ -149,9 +281,14 @@ function load_cfgs() {
     xhttp.send();
 }
 
+/**
+ * Updates the cfg select element options based off the
+ * client-loaded cfg global variable.
+ * Note: Use after requesting updated cfgs from server.
+ */
 function update_cfg_select() {
     var select = document.getElementById('cfgselect');
-    clear_select(select)
+    clear_select(select, true)
 
     for (var name in cfgs) {
         var option = document.createElement('option');
@@ -161,20 +298,45 @@ function update_cfg_select() {
     }
 }
 
-function set_current_cfg() {
-    var name = get_select('cfgselect');
+/**
+ * Executes when cfg select is clicked.
+ * Sets all selects and checkboxes to match the cfg in the cfg select.
+ * Does nothing if cfg select value is N/A.
+ */
+function cfg_select_onchange() {
+    //check cfg validity first
+    var name = get_select('cfgselect');  
+
+    if (name == NA) {
+        return;
+    }
+
     var setting = cfgs[name];
 
     for (var i = 1; i <= 4; i++) {
+        var row = setting[i - 1];
         var tool = 'tool'.concat(i);
+        document.getElementById(tool).value = row[tool];
         var chamber = 'chamber'.concat(i);
+        update_chamber_select(chamber, row[chamber]);
         var item = 'item'.concat(i);
-        var avg = 'avg'.concat(i);
-        var max = 'max'.concat(i);
-        var min = 'min'.concat(i);
+        update_item_select(item, row[item]);
+
+        if (enable_cfg_checkboxes(i)) {
+            var avg = 'avg'.concat(i);
+            document.getElementById(avg).checked = row[avg];
+            var max = 'max'.concat(i);
+            document.getElementById(max).checked = row[max];
+            var min = 'min'.concat(i);
+            document.getElementById(min).checked = row[min];
+        }      
     }
 }
 
+/**
+ * Saves the current cfg selections to the server as a json file.
+ * Uses AJAX to send the name and settings using the POST method.
+ */
 function save_cfg() {
     var name = "";
 
@@ -223,6 +385,10 @@ function save_cfg() {
     xhttp.send('name='.concat(name).concat('&settings='.concat(json_str)));
 }
 
+
+/**
+ * Test function to keep track of the client-loaded cfgs variable.
+ */
 function print_cfgs() {
     var key = window.prompt('Enter cfg name: ');
     alert(JSON.stringify(cfgs[key]));
