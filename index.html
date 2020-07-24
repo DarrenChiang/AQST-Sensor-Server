@@ -12,6 +12,10 @@
     <body onload="on_load()">
         <h3>Configuration</h3>
         <div>
+        	<label for="cfgselect">Select:</label>
+        	<select id="cfgselect"></select>
+        </div>
+        <div>
             <label class="select">Tool</label>
             <label class="select">Chamber</label>
             <label class="select">Item</label>
@@ -69,9 +73,9 @@
         </div>
         <div>
         	<button type="button" onclick="save_cfg()">Save</button>
-        	<button type="button">Test</button>
+        	<button type="button" onclick="print_cfgs()">Test</button>
         </div>
         <canvas id="chart"></canvas>
-        <p id="error"></p>
+        <pre id="error"></pre>
     </body>
 </html>

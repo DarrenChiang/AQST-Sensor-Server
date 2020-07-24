@@ -1,4 +1,5 @@
-var cfgs = []
+//loaded list of cfgs
+var cfgs = {};
 
 //get all tools from server
 function get_tools() {
@@ -38,8 +39,8 @@ function on_load() {
 
 //update select bar for tools
 function update_tools(id) {
-    tools = get_tools();
-    select = document.getElementById(id);
+    var tools = get_tools();
+    var select = document.getElementById(id);
     clear_select(select);
 
     var option = document.createElement('option');
@@ -48,7 +49,7 @@ function update_tools(id) {
     select.appendChild(option);
 
     for (var i = 0; i < tools.length; i++) {
-        var option = document.createElement('option');
+        option = document.createElement('option');
         option.value = tools[i];
         option.text = tools[i];
         select.appendChild(option);
@@ -59,9 +60,9 @@ function update_tools(id) {
 
 //update select bar for chambers
 function update_chambers(id) {
-    tool = get_select('tool'.concat(id.slice(-1)));
-    chambers = get_chambers(tool);
-    select = document.getElementById(id);
+    var tool = get_select('tool'.concat(id.slice(-1)));
+    var chambers = get_chambers(tool);
+    var select = document.getElementById(id);
     clear_select(select);
 
     for (var i = 0; i < chambers.length; i++) {
@@ -76,10 +77,10 @@ function update_chambers(id) {
 
 //update select bar for items
 function update_items(id) {
-    tool = get_select('tool'.concat(id.slice(-1)));
-    chamber = get_select('chamber'.concat(id.slice(-1)));
-    items = get_items(tool, chamber);
-    select = document.getElementById(id);
+    var tool = get_select('tool'.concat(id.slice(-1)));
+    var chamber = get_select('chamber'.concat(id.slice(-1)));
+    var items = get_items(tool, chamber);
+    var select = document.getElementById(id);
     clear_select(select);
 
     for (var i = 0; i < items.length; i++) {
@@ -92,7 +93,7 @@ function update_items(id) {
 
 //get current selected option
 function get_select(id) {
-    select = document.getElementById(id);
+    var select = document.getElementById(id);
 
     if (select.options.length > 0) {
         return select.options[select.selectedIndex].value;
@@ -110,18 +111,18 @@ function clear_select(select) {
 
 //get date
 function get_date(id) {
-    element = document.getElementById(id);
+    var element = document.getElementById(id);
     return element.value;
 }
 
 function get_checkbox(id) {
-    element = document.getElementById(id);
+    var element = document.getElementById(id);
     return element.checked;
 }
 
 function duration_is_valid(start, end) {
-    s_date = new Date(start);
-    e_date = new Date(end);
+    var s_date = new Date(start);
+    var e_date = new Date(end);
 
     if (start.length <= 0 && end.length <= 0) {
         alert('Please enter valid dates.');
@@ -140,48 +141,71 @@ function load_cfgs() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            /*document.getElementById('error').innerHTML = xhttp.responseText;*/
+            cfgs = JSON.parse(this.responseText);
+            update_cfg_select();
         }
-    }
+    };
     xhttp.open('GET', 'php/get_cfg.php', false);
     xhttp.send();
-    cfgs = JSON.parse(xhttp.responseText);
-    return cfgs;
+}
+
+function update_cfg_select() {
+    var select = document.getElementById('cfgselect');
+    clear_select(select)
+
+    for (var name in cfgs) {
+        var option = document.createElement('option');
+        option.value = name;
+        option.text = name;
+        select.appendChild(option);
+    }
+}
+
+function set_current_cfg() {
+    var name = get_select('cfgselect');
+    var setting = cfgs[name];
+
+    for (var i = 1; i <= 4; i++) {
+        var tool = 'tool'.concat(i);
+        var chamber = 'chamber'.concat(i);
+        var item = 'item'.concat(i);
+        var avg = 'avg'.concat(i);
+        var max = 'max'.concat(i);
+        var min = 'min'.concat(i);
+    }
 }
 
 function save_cfg() {
+    var name = "";
+
     do {
         name = window.prompt('Enter a name: ');
 
-        if (name == "null") {
+        if (name == 'null') {
             return;
         } else if (name.length > 0) {
-            for (var i = 0; i < cfgs.length; i++) {
-                if (name == cfgs[i]['name']) {
-                    alert('Name is already in use.');
-                    name = "";
-                    break;
-                }
+            if (cfgs[name]) {
+                alert('Name is already in use.');
+                name = null;
             }
         }      
-    } while (name.length < 1);
-    
+    } while (name == null || name.length < 1);  
 
     var settings = [];
 
     for (var i = 1; i <= 4; i++) {
         var select = {};
-        tool = 'tool'.concat(i);
+        var tool = 'tool'.concat(i);
         select[tool] = get_select(tool);
-        chamber = 'chamber'.concat(i);
+        var chamber = 'chamber'.concat(i);
         select[chamber] = get_select(chamber);
-        item = 'item'.concat(i);
+        var item = 'item'.concat(i);
         select[item] = get_select(item);
-        avg = 'avg'.concat(i);
+        var avg = 'avg'.concat(i);
         select[avg] = get_checkbox(avg);
-        max = 'max'.concat(i);
+        var max = 'max'.concat(i);
         select[max] = get_checkbox(max);
-        min = 'min'.concat(i);
+        var min = 'min'.concat(i);
         select[min] = get_checkbox(min);
         settings.push(select);
     }
@@ -190,11 +214,17 @@ function save_cfg() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById('error').innerHTML = xhttp.responseText;
+            cfgs[name] = settings;
+            update_cfg_select();
         }
-    }
+    };
     xhttp.open('POST', 'php/add_cfg.php', false);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('name='.concat(name).concat('&settings='.concat(json_str)));
-    load_cfgs();
+}
+
+function print_cfgs() {
+    var key = window.prompt('Enter cfg name: ');
+    alert(JSON.stringify(cfgs[key]));
+    document.getElementById('error').textContent = JSON.stringify(cfgs);
 }
