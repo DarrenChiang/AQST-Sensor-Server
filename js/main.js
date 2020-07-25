@@ -1,5 +1,6 @@
 const NA = 'N/A'; //default value for no selection.
 var cfgs = {}; //saved dictionary of cfgs on client side.
+var sensors = {}; //saved dictionary of sensors (Tool > Chamber > Item) on client side.
 
 /**
  * Get available tools.
@@ -48,8 +49,23 @@ function get_items(tool, chamber) {
  * Updates all cfg select bars.
  */
 function on_load() {
-    load_cfgs();
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var load_info = JSON.parse(this.responseText);
+            cfgs = load_info['cfgs'];
+            //sensors = load_info['sensors'];
+            reset_current_cfg();
+        }
+    };
+    xhttp.open('GET', 'php/on_load.php', false);
+    xhttp.send();
+}
 
+/**
+ * Resets all cfg selects and checkboxes.
+ */
+function reset_current_cfg() {
     for (var i = 1; i <= 4; i++) {
         update_tool_select('tool'.concat(i));
         update_chamber_select('chamber'.concat(i));
@@ -262,26 +278,6 @@ function duration_is_valid(start, end) {
 }
 
 /**
- *
- */
-function load_cfgs() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            cfgs = JSON.parse(this.responseText);
-
-            for (var name in cfgs) {
-                cfgs[name] = JSON.parse(cfgs[name]);
-            }
-
-            update_cfg_select();
-        }
-    };
-    xhttp.open('GET', 'php/get_cfg.php', false);
-    xhttp.send();
-}
-
-/**
  * Updates the cfg select element options based off the
  * client-loaded cfg global variable.
  * Note: Use after requesting updated cfgs from server.
@@ -383,14 +379,4 @@ function save_cfg() {
     xhttp.open('POST', 'php/add_cfg.php', false);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('name='.concat(name).concat('&settings='.concat(json_str)));
-}
-
-
-/**
- * Test function to keep track of the client-loaded cfgs variable.
- */
-function print_cfgs() {
-    var key = window.prompt('Enter cfg name: ');
-    alert(JSON.stringify(cfgs[key]));
-    document.getElementById('error').textContent = JSON.stringify(cfgs);
 }
