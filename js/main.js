@@ -72,12 +72,15 @@ function reset_current_cfg() {
         update_item_select('item'.concat(i));
         enable_cfg_checkboxes(i, false);
     }
+
+    document.getElementById('cfgselect').value = NA;
 }
 
 /**
  * Executes when tool select is clicked.
  * Updates chamber and item select respectively.
  * Enables or disables respective checkboxes.
+ * Sets cfg select to NA.
  * 
  * @param {id} id of element defined in html
  */
@@ -85,28 +88,33 @@ function tool_select_onchange(id) {
     update_chamber_select('chamber'.concat(id.slice(-1)));
     update_item_select('item'.concat(id.slice(-1)));
     enable_cfg_checkboxes(id.slice(-1));
+    document.getElementById('cfgselect').value = NA;
 }
 
 /**
  * Executes when chamber select is clicked.
  * Updates item select.
  * Enables or disables respective checkboxes.
+ * Sets cfg select to NA.
  * 
  * @param {id} id of element defined in html
  */
 function chamber_select_onchange(id) {
     update_item_select('item'.concat(id.slice(-1)));
     enable_cfg_checkboxes(id.slice(-1));
+    document.getElementById('cfgselect').value = NA;
 }
 
 /**
  * Executes when item select is clicked.
  * Enables or disables respective checkboxes.
+ * Sets cfg select to NA.
  * 
  * @param {id} id of element defined in html
  */
 function item_select_onchange(id) {
     enable_cfg_checkboxes(id.slice(-1));
+    document.getElementById('cfgselect').value = NA;
 }
 
 /**
@@ -192,6 +200,7 @@ function update_item_select(id, value = null) {
         option.text = items[i];
         select.appendChild(option);
     }
+
 
     if (value != null && value in items) {
         select.value = value;
