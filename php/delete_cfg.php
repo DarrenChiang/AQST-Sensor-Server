@@ -1,6 +1,6 @@
 <?php
     $path = '../cfg/'; //path of saved cfgs
-    $name = $_POST['name']; //get name from post request
+    $name = $_POST['cfg']; //get name from post request
     $file = $path . $name . '.json';
 
     if (!file_exists($file)) {
@@ -9,7 +9,8 @@
     }
         
     if (unlink($file)) {
-        echo "Configuration " . $name . " has been deleted."
+        echo "Configuration " . $name . " has been deleted.";
     } else {
-        echo "Internal Error: Configuration " . $name . " could not be deleted."     }
+        echo "Internal Error: Configuration " . $name . " could not be deleted.";
+    }
 ?>
