@@ -4,8 +4,8 @@
     <head>
         <title>Sensor Data</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Cache-control" content="no-cache">
         <link rel="stylesheet" href="css/main.css">
-        <script src="js/jQuery.js"></script>
         <script src="js/Chart.js"></script>
         <script src="js/main.js"></script>
     </head>
@@ -65,7 +65,8 @@
         </div>
         <br>
         <div>
-        	<button type="button" onclick="save_cfg()">Save</button>
+           	<button type="button" onclick="save_cfg()">Save</button>
+           	<button type="button" id="delete" onclick="delete_cfg()">Delete</button>
         	<button type="button" onclick="console.log(cfgs)">Test</button>
         </div>
         <br>

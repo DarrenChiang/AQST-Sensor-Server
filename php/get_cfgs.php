@@ -18,5 +18,5 @@
     }
 
     //output
-    echo json_encode($cfgs);
+    echo json_encode($cfgs, JSON_PRETTY_PRINT);
 ?>

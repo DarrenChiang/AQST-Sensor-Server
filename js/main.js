@@ -54,7 +54,9 @@ function on_load() {
         if (this.readyState == 4 && this.status == 200) {
             var load_info = JSON.parse(this.responseText);
             cfgs = load_info['cfgs'];
+            current_cfg = NA;
             //sensors = load_info['sensors'];
+            update_cfg_select();
             reset_current_cfg();
         }
     };
@@ -63,17 +65,18 @@ function on_load() {
 }
 
 /**
- * Resets all cfg selects and checkboxes.
+ * Updates all cfg selects and checkboxes to current cfg.
  */
 function reset_current_cfg() {
     for (var i = 1; i <= 4; i++) {
         update_tool_select('tool'.concat(i));
         update_chamber_select('chamber'.concat(i));
         update_item_select('item'.concat(i));
-        enable_cfg_checkboxes(i, false);
+        enable_cfg_checkboxes(i);
     }
 
     document.getElementById('cfgselect').value = NA;
+    document.getElementById('delete').disabled = true;
 }
 
 /**
@@ -118,6 +121,17 @@ function item_select_onchange(id) {
 }
 
 /**
+ * Uncheck the checkboxes of a row.
+ * 
+ * @param {row} the row of the checkboxes (corresponds with the select ids)
+ */
+function uncheck_cfg_checkboxes(row) {
+    document.getElementById('avg'.concat(row)).checked = false;
+    document.getElementById('max'.concat(row)).checked = false;
+    document.getElementById('min'.concat(row)).checked = false;
+}
+
+/**
  * Enable the avg, max, and min checkboxes if the select values are valid.
  * Returns if the checkboxes are enabled or not.
  * 
@@ -127,10 +141,15 @@ function enable_cfg_checkboxes(row) {
     var tool = document.getElementById('tool'.concat(row)).value == NA;
     var chamber = document.getElementById('chamber'.concat(row)).value == NA;
     var item = document.getElementById('item'.concat(row)).value == NA;
-    var disable = tool || chamber || item;
+    var disable = tool || chamber || item; 
     document.getElementById('avg'.concat(row)).disabled = disable;
     document.getElementById('max'.concat(row)).disabled = disable;
     document.getElementById('min'.concat(row)).disabled = disable;
+
+    if (disable) {
+        uncheck_cfg_checkboxes(row);
+    }
+
     return !disable;
 }
 
@@ -301,6 +320,8 @@ function update_cfg_select() {
         option.text = name;
         select.appendChild(option);
     }
+
+    cfg_select_onchange();
 }
 
 /**
@@ -313,6 +334,7 @@ function cfg_select_onchange() {
     var name = get_select('cfgselect');  
 
     if (name == NA) {
+        reset_current_cfg();
         return;
     }
 
@@ -334,16 +356,20 @@ function cfg_select_onchange() {
             document.getElementById(max).checked = row[max];
             var min = 'min'.concat(i);
             document.getElementById(min).checked = row[min];
-        }      
+        } else {
+            uncheck_cfg_checkboxes(i);
+        }     
     }
+
+    document.getElementById('delete').disabled = false;
 }
 
 /**
- * Saves the current cfg selections to the server as a json file.
+ * Updates the current cfg selections to the server.
  * Uses AJAX to send the name and settings using the POST method.
  */
 function save_cfg() {
-    var name = "";
+    var name = '';
 
     do {
         name = window.prompt('Enter a name: ');
@@ -353,6 +379,9 @@ function save_cfg() {
         } else if (name.length > 0) {
             if (cfgs[name]) {
                 alert('Name is already in use.');
+                name = null;
+            } else if (name == 'N/A') {
+                alert('Name cannot be "N/A"');
                 name = null;
             }
         }      
@@ -388,4 +417,23 @@ function save_cfg() {
     xhttp.open('POST', 'php/add_cfg.php', false);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('name='.concat(name).concat('&settings='.concat(json_str)));
+}
+
+function delete_cfg() {
+    var cfg = get_select('cfgselect');
+
+    if (!confirm('Are you sure you want to delete '.concat(cfg).concat('?'))) {
+        return;
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            delete cfgs[cfg];
+            update_cfg_select();
+        }
+    }
+    xhttp.open('POST', 'php/delete_cfg.php', false);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send('cfg='.concat(cfg));
 }
