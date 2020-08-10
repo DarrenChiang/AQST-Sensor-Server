@@ -4,6 +4,8 @@ var sensors = {}; //saved dictionary of sensors (Tool > Chamber > Item) on clien
 
 /**
  * Get available tools.
+ * 
+ * @return array of available tools
  */
 function get_tools() {
     //temporary dummy
@@ -16,6 +18,7 @@ function get_tools() {
  * Returns an empty list if any parameter is NA.
  * 
  * @param {tool} tool specification
+ * @return array of available chambers
  */
 function get_chambers(tool) {   
     if (tool == NA) {
@@ -33,6 +36,7 @@ function get_chambers(tool) {
  * 
  * @param {tool} tool specification
  * @param {chamber} chamber specification
+ * @return array of available items
  */
 function get_items(tool, chamber) {
     if (tool == NA || chamber == NA) {
@@ -136,6 +140,7 @@ function uncheck_cfg_checkboxes(row) {
  * Returns if the checkboxes are enabled or not.
  * 
  * @param {row} the row of the checkboxes (corresponds with the select ids)
+ * @return whether checkboxes of row are enabled or not
  */
 function enable_cfg_checkboxes(row) {
     var tool = document.getElementById('tool'.concat(row)).value == NA;
@@ -232,6 +237,7 @@ function update_item_select(id, value = null) {
  * Note: index and text of select option not currently used.
  * 
  * @param {id} id of element defined in html
+ * @return return value of selection or N/A
  */
 function get_select(id) {
     var select = document.getElementById(id);
@@ -266,6 +272,7 @@ function clear_select(select, na = false) {
  * Get current selected date of a datetime entry
  * 
  * @param {id} id of element defined in html
+ * return string value of datetime entry
  */
 function get_date(id) {
     var element = document.getElementById(id);
@@ -276,6 +283,7 @@ function get_date(id) {
  * Return whether a checkbox is checked.
  * 
  * @param {id} id of element defined in html
+ * @return whether element is checked
  */
 function get_checkbox(id) {
     var element = document.getElementById(id);
@@ -287,6 +295,7 @@ function get_checkbox(id) {
  * 
  * @param {start} the starting datetime of the duration
  * @param {end} the ending datetime of the duration
+ * @return if start is before end
  */
 function duration_is_valid(start, end) {
     var s_date = new Date(start);
@@ -441,54 +450,51 @@ function delete_cfg() {
 function set_today() {
     var start = document.getElementById('start');
     var end = document.getElementById('end');
-    var now = new Date();
-    var date = String(now.getFullYear());
-    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
-    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
-    var time = '00:00:00';
-    start.value = date.concat('T').concat(time);
-    time = String("0" + now.getHours()).slice(-2);
-    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
-    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
-    end.value = date.concat('T').concat(time);
+    var prior = new Date();
+    prior.setHours(0);
+    prior.setMinutes(0);
+    prior.setSeconds(0);
+    start.value = datetime_str(prior);
+    end.value = datetime_str(new Date());
 }
 
 function set_this_week() {
     var start = document.getElementById('start');
     var end = document.getElementById('end');
-    var now = new Date();
     var prior = new Date();
-    prior.setDate(now.getDate() - 6 + now.getDay());
-    var date = String(prior.getFullYear());
-    date = date.concat('-').concat(String("0" + prior.getMonth()).slice(-2));
-    date = date.concat('-').concat(String("0" + prior.getDate()).slice(-2));
-    var time = '00:00:00';
-    start.value = date.concat('T').concat(time);
-    date = String(now.getFullYear());
-    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
-    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
-    time = String("0" + now.getHours()).slice(-2);
-    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
-    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
-    end.value = date.concat('T').concat(time);
+    var date = prior.getDay() ? prior.getDate() - prior.getDay() + 1 : prior.getDate() - 6;
+    prior.setDate(date);
+    prior.setHours(0);
+    prior.setMinutes(0);
+    prior.setSeconds(0);
+    start.value = datetime_str(prior);
+    end.value = datetime_str(new Date());
 }
 
 function set_this_month() {
     var start = document.getElementById('start');
     var end = document.getElementById('end');
-    var now = new Date();
     var prior = new Date();
     prior.setDate(1);
-    var date = String(prior.getFullYear());
-    date = date.concat('-').concat(String("0" + prior.getMonth()).slice(-2));
-    date = date.concat('-').concat(String("0" + prior.getDate()).slice(-2));
-    var time = '00:00:00';
-    start.value = date.concat('T').concat(time);
-    date = String(now.getFullYear());
-    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
-    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
-    time = String("0" + now.getHours()).slice(-2);
-    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
-    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
-    end.value = date.concat('T').concat(time);
+    prior.setHours(0);
+    prior.setMinutes(0);
+    prior.setSeconds(0);
+    start.value = datetime_str(prior);
+    end.value = datetime_str(new Date());
+}
+
+/**
+ * Returns a string in the datetime entry format from a Date object.
+ * 
+ * @param {datetime} Javascript Date object
+ * @return string in datetime entry format
+ */
+function datetime_str(datetime) {
+    str = String(datetime.getFullYear());
+    str += '-' + String('0' + datetime.getMonth()).slice(-2);
+    str += '-' + String('0' + datetime.getDate()).slice(-2);
+    str += 'T' + String('0' + datetime.getHours()).slice(-2);
+    str += ':' + String('0' + datetime.getMinutes()).slice(-2);
+    str += ':' + String('0' + datetime.getSeconds()).slice(-2);
+    return str;
 }
