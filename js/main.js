@@ -437,3 +437,58 @@ function delete_cfg() {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('cfg='.concat(cfg));
 }
+
+function set_today() {
+    var start = document.getElementById('start');
+    var end = document.getElementById('end');
+    var now = new Date();
+    var date = String(now.getFullYear());
+    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
+    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
+    var time = '00:00:00';
+    start.value = date.concat('T').concat(time);
+    time = String("0" + now.getHours()).slice(-2);
+    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
+    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
+    end.value = date.concat('T').concat(time);
+}
+
+function set_this_week() {
+    var start = document.getElementById('start');
+    var end = document.getElementById('end');
+    var now = new Date();
+    var prior = new Date();
+    prior.setDate(now.getDate() - 6 + now.getDay());
+    var date = String(prior.getFullYear());
+    date = date.concat('-').concat(String("0" + prior.getMonth()).slice(-2));
+    date = date.concat('-').concat(String("0" + prior.getDate()).slice(-2));
+    var time = '00:00:00';
+    start.value = date.concat('T').concat(time);
+    date = String(now.getFullYear());
+    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
+    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
+    time = String("0" + now.getHours()).slice(-2);
+    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
+    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
+    end.value = date.concat('T').concat(time);
+}
+
+function set_this_month() {
+    var start = document.getElementById('start');
+    var end = document.getElementById('end');
+    var now = new Date();
+    var prior = new Date();
+    prior.setDate(1);
+    var date = String(prior.getFullYear());
+    date = date.concat('-').concat(String("0" + prior.getMonth()).slice(-2));
+    date = date.concat('-').concat(String("0" + prior.getDate()).slice(-2));
+    var time = '00:00:00';
+    start.value = date.concat('T').concat(time);
+    date = String(now.getFullYear());
+    date = date.concat('-').concat(String("0" + now.getMonth()).slice(-2));
+    date = date.concat('-').concat(String("0" + now.getDate()).slice(-2));
+    time = String("0" + now.getHours()).slice(-2);
+    time = time.concat(':').concat(String("0" + now.getMinutes()).slice(-2));
+    time = time.concat(':').concat(String("0" + now.getSeconds()).slice(-2));
+    end.value = date.concat('T').concat(time);
+}

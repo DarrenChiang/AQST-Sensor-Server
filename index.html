@@ -4,7 +4,9 @@
     <head>
         <title>Sensor Data</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
         <link rel="stylesheet" href="css/main.css">
         <script src="js/Chart.js"></script>
         <script src="js/main.js"></script>
@@ -72,13 +74,18 @@
         <br>
         <div>
             <label class="date-time" for="start">From:</label>
-            <input type="datetime-local" id="start" name="start">
+            <input type="datetime-local" id="start" name="start" step="1">
         </div>
         <div>
             <label class="date-time" for="end">To:</label>
-            <input type="datetime-local" id="end" name="end">
+            <input type="datetime-local" id="end" name="end" step="1">
         </div>
-        <br>      
+        <br>  
+        <div>
+        	<button type="button" onclick="set_today()">Today</button>
+        	<button type="button" onclick="set_this_week()">This Week</button>
+        	<button type="button" onclick="set_this_month()">This Month</button>
+        </div>    
         <canvas id="chart"></canvas>
         <pre id="error"></pre>
     </body>
