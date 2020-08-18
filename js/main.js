@@ -1,6 +1,7 @@
 const NA = 'N/A'; //default value for no selection.
 var cfgs = {}; //saved dictionary of cfgs on client side.
 var sensors = {}; //saved dictionary of sensors (Tool > Chamber > Item) on client side.
+var canvas = null; //defining global variable to carry canvas element.
 
 /**
  * Get available tools.
@@ -30,15 +31,34 @@ function get_chambers(tool) {
 }
 
 /**
- * Get available items from specified tool and chamber.
- * Hierarchy: Tool > Chamber > Item
+ * Get available sensors from specified tool and chamber.
+ * Hierarchy: Tool > Chamber > Sensor
  * Returns an empty list if any parameter is NA.
  * 
  * @param {tool} tool specification
  * @param {chamber} chamber specification
  * @return array of available items
  */
-function get_items(tool, chamber) {
+function get_sensors(tool, chamber, sensor) {
+    if (tool == NA || chamber == NA) {
+        return [];
+    }
+
+    //temporary dummy
+    return ['sensor#1', 'sensor#2'];
+}
+
+/**
+ * Get available items from specified tool,chamber, and sensor.
+ * Hierarchy: Tool > Chamber > Sensor > Item
+ * Returns an empty list if any parameter is NA.
+ * 
+ * @param {tool} tool specification
+ * @param {chamber} chamber specification
+ * @param {sensor} sensor specification
+ * @return array of available items
+ */
+function get_items(tool, chamber, sensor) {
     if (tool == NA || chamber == NA) {
         return [];
     }
@@ -53,6 +73,7 @@ function get_items(tool, chamber) {
  * Updates all cfg select bars.
  */
 function on_load() {
+    load_canvas();
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -64,8 +85,15 @@ function on_load() {
             reset_current_cfg();
         }
     };
-    xhttp.open('GET', 'php/on_load.php', false);
+    xhttp.open('GET', 'php/on_load.php', true);
     xhttp.send();
+}
+
+function load_canvas() {
+    canvas = document.getElementById('chart');
+    var chart = new Chart(canvas, {
+        type: 'scatter'
+    });
 }
 
 /**
@@ -75,6 +103,7 @@ function reset_current_cfg() {
     for (var i = 1; i <= 4; i++) {
         update_tool_select('tool'.concat(i));
         update_chamber_select('chamber'.concat(i));
+        update_sensor_select('sensor'.concat(i));
         update_item_select('item'.concat(i));
         enable_cfg_checkboxes(i);
     }
@@ -93,6 +122,7 @@ function reset_current_cfg() {
  */
 function tool_select_onchange(id) {
     update_chamber_select('chamber'.concat(id.slice(-1)));
+    update_sensor_select('sensor'.concat(id.slice(-1)));
     update_item_select('item'.concat(id.slice(-1)));
     enable_cfg_checkboxes(id.slice(-1));
     document.getElementById('cfgselect').value = NA;
@@ -107,6 +137,21 @@ function tool_select_onchange(id) {
  * @param {id} id of element defined in html
  */
 function chamber_select_onchange(id) {
+    update_item_select('item'.concat(id.slice(-1)));
+    update_sensor_select('sensor'.concat(id.slice(-1)));
+    enable_cfg_checkboxes(id.slice(-1));
+    document.getElementById('cfgselect').value = NA;
+}
+
+/**
+ * Executes when chamber select is clicked.
+ * Updates item select.
+ * Enables or disables respective checkboxes.
+ * Sets cfg select to NA.
+ * 
+ * @param {id} id of element defined in html
+ */
+function sensor_select_onchange(id) {
     update_item_select('item'.concat(id.slice(-1)));
     enable_cfg_checkboxes(id.slice(-1));
     document.getElementById('cfgselect').value = NA;
@@ -206,6 +251,32 @@ function update_chamber_select(id, value = null) {
 }
 
 /**
+ * Updates the sensor select element options.
+ * 
+ * @param {id} id of element defined in html
+ * @param {value} optional default value to set for select
+ */
+function update_sensor_select(id, value = null) {
+    var tool = get_select('tool'.concat(id.slice(-1)));
+    var chamber = get_select('chamber'.concat(id.slice(-1)));
+    var sensors = get_sensors(tool, chamber);
+    var select = document.getElementById(id);
+    clear_select(select, true);
+
+    for (var i = 0; i < sensors.length; i++) {
+        var option = document.createElement('option');
+        option.value = sensors[i];
+        option.text = sensors[i];
+        select.appendChild(option);
+    }
+
+
+    if (value != null && value in items) {
+        select.value = value;
+    }
+}
+
+/**
  * Updates the item select element options.
  * 
  * @param {id} id of element defined in html
@@ -214,7 +285,8 @@ function update_chamber_select(id, value = null) {
 function update_item_select(id, value = null) {
     var tool = get_select('tool'.concat(id.slice(-1)));
     var chamber = get_select('chamber'.concat(id.slice(-1)));
-    var items = get_items(tool, chamber);
+    var sensor = get_select('sensor'.concat(id.slice(-1)));
+    var items = get_items(tool, chamber, sensor);
     var select = document.getElementById(id);
     clear_select(select, true);
 
@@ -355,6 +427,8 @@ function cfg_select_onchange() {
         document.getElementById(tool).value = row[tool];
         var chamber = 'chamber'.concat(i);
         update_chamber_select(chamber, row[chamber]);
+        var sensor = 'sensor'.concat(i);
+        update_sensor_select(sensor, row[sensor]);
         var item = 'item'.concat(i);
         update_item_select(item, row[item]);
 
@@ -404,6 +478,8 @@ function save_cfg() {
         select[tool] = get_select(tool);
         var chamber = 'chamber'.concat(i);
         select[chamber] = get_select(chamber);
+        var sensor = 'sensor'.concat(i);
+        select[sensor] = get_select(sensor);
         var item = 'item'.concat(i);
         select[item] = get_select(item);
         var avg = 'avg'.concat(i);
@@ -442,7 +518,7 @@ function delete_cfg() {
             update_cfg_select();
         }
     }
-    xhttp.open('POST', 'php/delete_cfg.php', false);
+    xhttp.open('POST', 'php/delete_cfg.php', true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('cfg='.concat(cfg));
 }

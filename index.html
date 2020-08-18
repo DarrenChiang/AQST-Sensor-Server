@@ -24,6 +24,7 @@
         <div>
             <select class="select" id="tool1" onchange="tool_select_onchange('tool1')"></select>
             <select class="select" id="chamber1" onchange="chamber_select_onchange('chamber1')"></select>
+            <select class="select" id="sensor1" onchange="sensor_select_onchange('sensor1')"></select>
             <select class="select" id="item1" onchange="item_select_onchange('item1')"></select>
             <label for="avg1">AVG:</label>
             <input type="checkbox" id="avg1" name="avg1">
@@ -35,8 +36,9 @@
         <div">
             <select class="select" id="tool2" onchange="tool_select_onchange('tool2')"></select>
             <select class="select" id="chamber2" onchange="chamber_select_onchange('chamber2')"></select>
+            <select class="select" id="sensor2" onchange="sensor_select_onchange('sensor2')"></select>
             <select class="select" id="item2" onchange="item_select_onchange('item2')"></select>
-            <label for="avg2">AVG: </label>
+            <label for="avg2">AVG:</label>
             <input type="checkbox" id="avg2" name="avg2">
             <label for="max2">MAX:</label>
             <input type="checkbox" id="max2" name="max2">
@@ -46,8 +48,9 @@
         <div>
             <select class="select" id="tool3" onchange="tool_select_onchange('tool3')"></select>
             <select class="select" id="chamber3" onchange="chamber_select_onchange('chamber3')"></select>
+            <select class="select" id="sensor3" onchange="sensor_select_onchange('sensor3')"></select>
             <select class="select" id="item3" onchange="item_select_onchange('item3')"></select>
-            <label for="avg3">AVG: </label>
+            <label for="avg3">AVG:</label>
             <input type="checkbox" id="avg3" name="avg3">
             <label for="max3">MAX:</label>
             <input type="checkbox" id="max3" name="max3">
@@ -57,8 +60,9 @@
         <div>
             <select class="select" id="tool4" onchange="tool_select_onchange('tool4')"></select>
             <select class="select" id="chamber4" onchange="chamber_select_onchange('chamber4')"></select>
+            <select class="select" id="sensor4" onchange="sensor_select_onchange('sensor4')"></select>
             <select class="select" id="item4" onchange="item_select_onchange('item3')"></select>
-            <label for="avg4">AVG: </label>
+            <label for="avg4">AVG:</label>
             <input type="checkbox" id="avg4" name="avg4">
             <label for="max4">MAX:</label>
             <input type="checkbox" id="max4" name="max4">
@@ -85,7 +89,8 @@
         	<button type="button" onclick="set_today()">Today</button>
         	<button type="button" onclick="set_this_week()">This Week</button>
         	<button type="button" onclick="set_this_month()">This Month</button>
-        </div>    
+        </div>
+        <br>
         <canvas id="chart"></canvas>
         <pre id="error"></pre>
     </body>
