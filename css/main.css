@@ -1,9 +1,9 @@
 .select {
-	display: inline-block;
-	min-width: 100px;
+    display: inline-block;
+    min-width: 100px;
 }
 
 label.date-time {
-	display: inline-block;
-	min-width: 40px;
+    display: inline-block;
+    min-width: 40px;
 }
